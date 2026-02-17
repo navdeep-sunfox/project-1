@@ -1,0 +1,5 @@
+tensorflow==2.20.0
+numpy==2.4.1
+matplotlib==3.10.8
+dvc==3.66.1
+dvc-gs==3.0.2

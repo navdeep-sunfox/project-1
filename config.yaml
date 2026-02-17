@@ -1,0 +1,15 @@
+training:
+  epochs: 12
+  batch_size: 32
+
+model:
+  hidden_units: 128
+  optimizer: adam
+  loss: sparse_categorical_crossentropy
+
+data:
+  normalize: true
+
+paths:
+  model_dir: ./output/model
+  model_name: model.h5
