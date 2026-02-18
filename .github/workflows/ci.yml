@@ -24,4 +24,4 @@ jobs:
     # Run Test
     - name: Run Tests
       run: |
-        python test_add.py
+        python ci_test.py
