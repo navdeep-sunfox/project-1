@@ -18,5 +18,7 @@ COPY config.yaml .
 # Copy model folder (after dvc pull)
 COPY output/ output/
 
+EXPOSE 8080
+
 # Default command
 CMD ["python", "test.py"]
