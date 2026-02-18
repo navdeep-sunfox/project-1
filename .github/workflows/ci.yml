@@ -23,7 +23,7 @@ jobs:
     # Install DVC
     - name: Install DVC
       run: |
-        pip install dvc[gcs]
+        pip install dvc-gs
 
     # Auth Google Cloud
     - name: Auth GCP
