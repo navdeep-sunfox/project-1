@@ -1,18 +1,17 @@
-name: Simple CI Pipeline
+name: ML CI/CD Pipeline
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
 
 jobs:
-  test:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
 
-    # Get code
-    - name: Checkout Repo
+    # Checkout repo
+    - name: Checkout
       uses: actions/checkout@v3
 
     # Setup Python
@@ -21,7 +20,49 @@ jobs:
       with:
         python-version: "3.10"
 
-    # Run Test
-    - name: Run Tests
+    # Install DVC
+    - name: Install DVC
       run: |
-        python ci_test.py
+        pip install dvc[gcs]
+
+    # Auth Google Cloud
+    - name: Auth GCP
+      run: |
+        echo "${{ secrets.GCP_KEY }}" > key.json
+        export GOOGLE_APPLICATION_CREDENTIALS=key.json
+
+    # Pull model
+    - name: DVC Pull
+      run: |
+        dvc pull
+
+    # Setup gcloud
+    - name: Setup gcloud
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: vertex-ai-demo-457907
+        service_account_key: ${{ secrets.GCP_KEY }}
+
+    # Configure Docker
+    - name: Configure Docker
+      run: |
+        gcloud auth configure-docker us-central1-docker.pkg.dev
+
+#     # Build Image
+#     - name: Build Docker Image
+#       run: |
+#         docker build -t us-central1-docker.pkg.dev/my-ml-project/ml-repo/ml-app:latest .
+
+#     # Push Image
+#     - name: Push Image
+#       run: |
+#         docker push us-central1-docker.pkg.dev/my-ml-project/ml-repo/ml-app:latest
+
+#     # Deploy to Cloud Run
+#     - name: Deploy
+#       run: |
+#         gcloud run deploy ml-app \
+#           --image us-central1-docker.pkg.dev/my-ml-project/ml-repo/ml-app:latest \
+#           --region us-central1 \
+#           --platform managed \
+#           --allow-unauthenticated
