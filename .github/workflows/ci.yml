@@ -1,0 +1,27 @@
+name: Simple CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    # Get code
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+
+    # Setup Python
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    # Run Test
+    - name: Run Tests
+      run: |
+        python test_add.py
