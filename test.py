@@ -12,42 +12,38 @@ with open("config.yaml", "r") as f:
     config = yaml.safe_load(f)
 
 
-# Load MNIST test data
-(_, _), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
-
-
-# Normalize (same as training)
-if config["data"]["normalize"]:
-    x_test = x_test / 255.0
-
-
-# Load trained model
-model_path = os.path.join(config["paths"]["model_dir"],config["paths"]["model_name"])
-
-print("Loading model from:", model_path)
-
-model = tf.keras.models.load_model(model_path)
-
 @app.route("/")
 def home():
-    return "MNIST Model Running"
+    return "MNIST API Running"
 
 
-# # Print results
-# print("=" * 40)
-# print("Test Loss    :", test_loss)
-# print("Test Accuracy:", test_acc)
-# print("=" * 40)
-
-
-@app.route("/predict", methods=["POST"])
+@app.route("/predict", methods=["GET"])
 def predict():
+    # Load MNIST test data
+    (_, _), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
 
 
-    test_loss, test_acc = model.evaluate(x_test, y_test, verbose=1)
+    # Normalize (same as training)
+    if config["data"]["normalize"]:
+        x_test = x_test / 255.0
 
-    return jsonify({"prediction": f"test loss {test_loss}, test accuracy {test_acc}"})
 
+    # Load trained model
+    model_path = os.path.join(config["paths"]["model_dir"],config["paths"]["model_name"])
+
+    print("Loading model from:", model_path)
+
+    model = tf.keras.models.load_model(model_path)
+
+    if model is None:
+        return jsonify({"status": "Model still loading"}), 503
+
+    loss, acc = model.evaluate(x_test, y_test, verbose=0)
+
+    return jsonify({
+        "loss": float(loss),
+        "accuracy": float(acc)
+    })
 
 if __name__ == "__main__":
 
