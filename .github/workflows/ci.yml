@@ -26,10 +26,10 @@ jobs:
         pip install dvc-gs
 
     # Auth Google Cloud
-    - name: Auth GCP
-      run: |
-        echo "${{ secrets.GCP_KEY }}" > key.json
-        export GOOGLE_APPLICATION_CREDENTIALS=key.json
+    - name: Authenticate to GCP
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCP_KEY }}
 
     # Pull model
     - name: DVC Pull
@@ -41,7 +41,6 @@ jobs:
       uses: google-github-actions/setup-gcloud@v1
       with:
         project_id: vertex-ai-demo-457907
-        service_account_key: ${{ secrets.GCP_KEY }}
 
     # Configure Docker
     - name: Configure Docker
